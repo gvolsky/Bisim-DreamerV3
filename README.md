@@ -35,7 +35,7 @@ D = JSD(P, Q) = ½ · KL(P ‖ M) + ½ · KL(Q ‖ M),   M = ½ (P + Q)
 The world model is trained with this objective instead of the decoder / reconstruction loss (reconstruction-free DreamerV3).
 
 **3. Action-aware bisimulation (act-Bisim).**
-Standard bisimulation ignores how *actions* shape the next state, which can itself be task-relevant. We extend the metric so that similar states are required to respond similarly to arbitrary actions:
+Standard bisimulation ignores how actions shape the next state, which can itself be task-relevant. We extend the metric so that similar states are required to respond similarly to arbitrary actions:
 
 ```
 act-Bisim(f(aᵢ,zᵢ), f(aⱼ,zⱼ)) = |r(aᵢ,zᵢ) − r(aⱼ,zⱼ)| + γ · E_a [ ρ(f(a, z′ᵢ), f(a, z′ⱼ)) ]
