@@ -92,10 +92,7 @@ Legend: *DreamerV3* — reconstruction baseline; *Bisimulation (normal)* — Gau
 
 Built on the open-source [DreamerV3 reimplementation](https://github.com/danijar/dreamerv3) (JAX).
 
-The bisimulation code lives on two branches: [`bisimulation`](../../tree/bisimulation) (categorical JSD objective) and [`action_bisim`](../../tree/action_bisim) (adds the action-aware variants).
-
 ```bash
-git checkout action_bisim
 pip install -r requirements.txt
 
 # Categorical bisimulation on Walker Walk with video-background distractors
@@ -122,7 +119,7 @@ General DreamerV3 usage tips (config blocks, debugging, logging, custom environm
 
 ## Repository structure
 
-Modules changed relative to upstream DreamerV3 (on the `bisimulation` / `action_bisim` branches):
+Modules changed relative to upstream DreamerV3:
 
 ```
 dreamerv3/agent.py                    # bisimulation losses in WorldModel.loss (all variants)
