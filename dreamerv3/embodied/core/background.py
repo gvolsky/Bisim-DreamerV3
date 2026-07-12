@@ -60,7 +60,6 @@ class RandomVideoSource(ImageSource):
       filelist: a list of video files
     """
     self.seed = seed
-    print(f"BACKGR SEED: {self.seed}")
     self.rand_gen = random.Random(seed)
     self.grayscale = grayscale
     self.shape = shape
@@ -90,7 +89,6 @@ class RandomPickleSource(ImageSource):
       filelist: a list of pickle files
     """
     self.filelist = filelist
-    print(f"BACKGR SEED: {seed}")
     self.rand_gen = random.Random(seed)
     self.build_arr()
   
@@ -119,7 +117,6 @@ class RandomNoise(ImageSource):
     self.channels = 1 if grayscale else 3
     self.total_frames = total_frames if total_frames else 500
     self.shape = shape
-    print(f"BACKGR SEED: {seed}")
     self.rand_gen = np.random.default_rng(seed)
     self.build_arr()
 

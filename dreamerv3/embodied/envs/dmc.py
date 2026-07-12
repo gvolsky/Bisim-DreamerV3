@@ -31,9 +31,14 @@ class DMC(embodied.Env):
       os.environ['MUJOCO_GL'] = 'egl'
 
     if back_type == 'video':
-      print(f"BACKGROUND PATH: {back_path}")
-      with open(back_path, 'r') as f:
-        files = [line.strip() for line in f]
+      # back_path is either a glob pattern for video files or a text file
+      # listing one video path per line
+      back_path = os.path.expanduser(back_path)
+      if os.path.isfile(back_path) and not back_path.endswith('.mp4'):
+        with open(back_path, 'r') as f:
+          files = [line.strip() for line in f if line.strip()]
+      else:
+        files = glob.glob(back_path)
       assert len(files), "Pattern {} does not match any files".format(back_path)
       self._bg = embodied.background.RandomVideoSource(
         size, files, seed=seed, grayscale=grayscale

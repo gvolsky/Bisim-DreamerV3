@@ -125,7 +125,6 @@ class WorldModel(nj.Module):
   def __init__(self, obs_space, act_space, config):
     self.obs_space = obs_space
     self.act_space = act_space['action']
-    print(f"act_space: {self.act_space.shape}")
     self.config = config
     shapes = {k: tuple(v.shape) for k, v in obs_space.items()}
     shapes = {k: v for k, v in shapes.items() if not k.startswith('log_')}
@@ -137,7 +136,6 @@ class WorldModel(nj.Module):
         'cont': nets.MLP((), **config.cont_head, name='cont')
     }
     self.enc_loss = self.config.enc_loss.impl
-    print(f"ENC LOSS IMPL: {self.enc_loss}")
     if self.enc_loss in ['bisim1', 'bisim2', 'bisim3', 'bisim4']:
       self.act = nets.MLP(
         None, layers=1, units=4096, inputs=['tensor'], name='act'
