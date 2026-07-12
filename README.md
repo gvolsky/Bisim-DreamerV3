@@ -3,7 +3,7 @@
 **Task-relevant world-model latents under visual distractors.**
 Master's thesis project (HSE University, 2024) — [Artemy Moseychuk](https://www.linkedin.com/in/artemy-moseychuk-089a8a200/).
 
-This repository modifies [DreamerV3](https://arxiv.org/abs/2301.04104) to learn observation representations that ignore task-irrelevant visual noise. The reconstruction objective of the world model is replaced with a **bisimulation metric adapted to DreamerV3's categorical latent distributions** (via Jensen–Shannon divergence), plus an **action-aware extension** of the metric. Evaluated on DeepMind Control tasks with distractor backgrounds (random video / Gaussian noise), the categorical bisimulation objective dramatically outperforms reconstruction-based DreamerV3 under correlated visual noise, while remaining competitive on clean environments.
+This repository modifies [DreamerV3](https://arxiv.org/abs/2301.04104) to learn observation representations that ignore task-irrelevant visual noise. The reconstruction objective of the world model is replaced with a bisimulation metric adapted to DreamerV3's categorical latent distributions (via Jensen–Shannon divergence), plus an action-aware extension of the metric. Evaluated on DeepMind Control tasks with distractor backgrounds (random video / Gaussian noise), the categorical bisimulation objective dramatically outperforms reconstruction-based DreamerV3 under correlated visual noise, while remaining competitive on clean environments.
 
 ![Walker Walk training curves under video-background and noise distractors](assets/walker_walk.png)
 *Walker Walk, 1M steps. Under video-background distractors (left), bisimulation objectives (green/red) learn task-relevant state where reconstruction-based DreamerV3 (blue) plateaus.*
@@ -18,7 +18,7 @@ Bisimulation metrics offer a task-grounded alternative: two states are close if 
 Bisim(sᵢ, sⱼ) = |rᵢᵖ − rⱼᵖ| + γ · D(Pᵖ(·|sᵢ), Pᵖ(·|sⱼ))
 ```
 
-Prior work (e.g., DBC — Zhang et al., 2021) instantiates `D` as a 2-Wasserstein distance between Gaussian latents. DreamerV3, however, uses **categorical** latent distributions, where W₂ has no closed form.
+Prior work (e.g., DBC — Zhang et al., 2021) instantiates `D` as a 2-Wasserstein distance between Gaussian latents. DreamerV3, however, uses categorical latent distributions, where W₂ has no closed form.
 
 ## Contributions
 
@@ -26,13 +26,13 @@ Prior work (e.g., DBC — Zhang et al., 2021) instantiates `D` as a 2-Wasserstei
 Background pixels (task-irrelevant regions) are replaced per episode with either (a) a random video clip from Kinetics-400 (correlated, structured noise) or (b) i.i.d. Gaussian noise. This stress-tests whether the representation captures task-relevant state or memorizes appearance.
 
 **2. Bisimulation for categorical latents.**
-The distributional distance in the bisimulation target is replaced with **Jensen–Shannon divergence**, which is well-defined, symmetric, and bounded for categorical distributions:
+The distributional distance in the bisimulation target is replaced with Jensen–Shannon divergence, which is well-defined, symmetric, and bounded for categorical distributions:
 
 ```
 D = JSD(P, Q) = ½ · KL(P ‖ M) + ½ · KL(Q ‖ M),   M = ½ (P + Q)
 ```
 
-The world model is trained with this objective **instead of the decoder / reconstruction loss** (reconstruction-free DreamerV3).
+The world model is trained with this objective instead of the decoder / reconstruction loss (reconstruction-free DreamerV3).
 
 **3. Action-aware bisimulation (act-Bisim).**
 Standard bisimulation ignores how *actions* shape the next state, which can itself be task-relevant. We extend the metric so that similar states are required to respond similarly to arbitrary actions:
@@ -43,7 +43,7 @@ act-Bisim(f(aᵢ,zᵢ), f(aⱼ,zⱼ)) = |r(aᵢ,zᵢ) − r(aⱼ,zⱼ)| + γ · 
 
 where `f : A × Z → Z` is the latent dynamics model.
 
-**A finding on estimating `E_a`:** the reported variant evaluates the expectation at a *fixed* probe action (the same action at every training step). Post-thesis experiments that resample the action uniformly at each step — the "correct" single-sample Monte Carlo estimate — destroy learning entirely: the regression target becomes non-stationary and too high-variance for the encoder to fit. A fixed probe action keeps the target geometry stationary and turns out to be what makes action-aware bisimulation trainable — averaging over 10 fixed actions did not recover performance either. See `bisim1`–`bisim4` in `WorldModel.loss` for all variants; `bisim3` is the one reported below.
+**A finding on estimating `E_a`:** the reported variant evaluates the expectation at a fixed probe action (the same action at every training step). Post-thesis experiments that resample the action uniformly at each step — the "correct" single-sample Monte Carlo estimate — destroy learning entirely: the regression target becomes non-stationary and too high-variance for the encoder to fit. A fixed probe action keeps the target geometry stationary and turns out to be what makes action-aware bisimulation trainable — averaging over 10 fixed actions did not recover performance either. See `bisim1`–`bisim4` in `WorldModel.loss` for all variants; `bisim3` is the one reported below.
 
 ## Results
 
